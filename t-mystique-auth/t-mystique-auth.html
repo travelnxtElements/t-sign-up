@@ -1,0 +1,50 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../iron-ajax/iron-ajax.html">
+
+<dom-module id="t-mystique-auth">
+
+<template>
+  <iron-ajax id="tokenCall" method="POST" url="[[url]]" verbose content-type="application/json" on-response="_callback"></iron-ajax>
+</template>
+
+</dom-module>
+
+<script>
+  Polymer({
+
+    is: 't-mystique-auth',
+
+    properties:{
+        
+        name:{
+          type:String,
+          value:""
+        },
+
+        cid:Number,
+
+        url:String,
+
+        tokenResponse:{
+          type:Object,
+          notify:true
+        }
+    },
+
+    attached: function(){
+      var request=  {
+        "Name": this.name,
+        "CID": this.cid
+      };
+      this.$.tokenCall.body = JSON.stringify(request);
+      this.$.tokenCall.generateRequest();
+    },
+
+    _callback: function(event){
+      this.tokenResponse =   event.detail.response;
+    }
+
+
+ 
+  })
+</script>

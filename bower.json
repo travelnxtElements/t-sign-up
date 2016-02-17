@@ -1,0 +1,44 @@
+{
+  "name": "t-register-user",
+  "version": "1.0.0",
+  "authors": [
+    "Rahul Pilkhwal <rahul.pilkhwal@tavisca.com>",
+    "Shailesh Kumar Srivastava <ssrivastava@tavisca.com>",
+    "Sounak Pal <spal@tavisca.com>",
+    "Ajinkya Tejankar <tejankarajinkya@gmail.com>",
+    "Manoj Chalode <chalodem@gmail.com>"
+  ],
+  "description": "",
+  "main": "",
+  "moduleType": [],
+  "keywords": [
+    "Polymer",
+    "Web",
+    "Components"
+  ],
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "polymer": "Polymer/polymer#^1.1.0",
+    "t-input": "atomelements/t-input#master",
+    "t-shared-components": "atomelements/t-shared-components#master",
+    "t-button": "atomelements/t-button#master",
+    "t-checkbox": "atomelements/t-checkbox#master",
+    "t-calendar": "atomelements/t-calendar#master",
+    "t-password-input": "atomelements/t-password-input#master",
+    "t-notify": "atomelements/t-notify#master",
+    "iron-ajax": "PolymerElements/iron-ajax#^1.1.1"
+  },
+  "resolutions": {
+    "t-checkbox": "master",
+    "t-input": "master",
+    "t-shared-components": "master"
+  }
+}

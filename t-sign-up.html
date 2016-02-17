@@ -1,0 +1,205 @@
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../t-notify/t-notify.html">
+<link rel="import" href="../iron-ajax/iron-ajax.html">
+<link rel="import" href="../t-input/t-input.html">
+<link rel="import" href="../t-calendar/t-calendar.html">
+<link rel="import" href="../t-password-input/t-password-input.html">
+<link rel="import" href="../t-button/t-button.html">
+<link rel="import" href="../t-shared-components/theme.html">
+
+<dom-module id="t-sign-up">
+    <template>
+        <style>
+            t-notify{
+                margin-bottom: 10px;
+            }
+
+            t-button {
+                display: block;
+            }
+            
+            label, span, ul li {
+                font-family: 'Open Sans', sans-serif;
+                font-size: 12px;
+            }
+            
+            label, span{
+                color: #bbbbbb;
+            }
+            
+            t-input + t-input, t-calendar + t-input, t-calendar {
+                margin-top: 15px;
+            }
+        </style>
+        <t-notify active="[[notification.isActive]]" type="[[notification.type]]" message="[[notification.message]]"></t-notify>
+        <t-input id="firstName" type="text" error-message="Invalid input!" pattern="[a-zA-Z ']*" max-length="10" value="{{firstName::input}}" label="First Name" required auto-validate></t-input>
+        <t-input id="lastName" type="text" error-message="Invalid input!" pattern="[a-zA-Z ']*" max-length="10" value="{{lastName::input}}" label="Last Name" required auto-validate></t-input>
+        <t-calendar id="dateOfBirth" label="Date Of Birth" is-dob selected-date="{{dateOfBirth}}" required></t-calendar>
+        <t-input id="emailId" type="text" value="{{email::input}}" label="Email" required pattern='^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$' error-message="Invalid email!" required></t-input>
+        <label>This will be used as your user name.</label>
+        <t-password-input id="password" password="{{password}}" is-valid-password="{{isValidPassword}}"></t-password-input>
+        <span class="base">I have read and agree to terms of use and privacy policy.</span>
+        <t-button class="primary" label="Create Account" raised on-click="_saveNewUser"></t-button>
+        <span class="base">If you are an existing user sign in here</span>
+        <iron-ajax id="userAvailability" url="{{apiBaseUrl}}user/availability/[[email]]" content-type="application/json" last-response="{{checkUserAvailabilityResponse}}" debounce-duration="{{debounceDuration}}"></iron-ajax>
+        <iron-ajax id="saveUser" url="{{apiBaseUrl}}user" method="PUT" content-type="application/json" last-response="{{saveUserResponse}}"></iron-ajax>        
+    </template>
+    <script>
+        Polymer({
+
+            is: 't-sign-up',
+
+            properties: {
+
+                firstName: String,
+
+                lastName: String,
+
+                email: {
+                    type: String,
+                    observer: '_userNameAvailability'
+                },
+
+                dateOfBirth: Date,
+
+                password: String,
+
+                apiBaseUrl: {
+                    type: String,
+                    value: 'http://dev-mystiquecode.tavisca.com/api/'
+                },
+
+                token: {
+                    type: String,
+                    value: '',
+                    notify: true,
+                    reflectToAttribute: true
+                },
+
+                checkUserAvailabilityResponse: {
+                    type: Object,
+                    observer: '_notifyEmailValidation'
+                },
+
+                saveUserResponse: {
+                    type: Object,
+                    observer: '_notify'
+                },
+
+                type: {
+                    type: String,
+                    value: 'password'
+                },
+
+                notification: {
+                    type: Object,
+                    value: {
+                        isActive: false,
+                        type: '',
+                        message: ''
+                    }
+                }
+            },
+
+            _userNameAvailability: function() {
+
+            this.set('notification.isActive', false);
+
+                if (this.$.emailId.validate()) {
+                    this.$.userAvailability.params = {
+                        "token": this.token
+                    };
+                    this.$.userAvailability.generateRequest();
+                }
+            },
+
+            _saveNewUser: function() {
+
+                var validUserData = this.validate();
+
+                if (!validUserData)
+                    return;
+
+                this.$.saveUser.params = {
+                    token: this.token
+                };
+                this.$.saveUser.body = JSON.stringify(this._generateRequest());
+                this.$.saveUser.generateRequest();
+            },
+
+            validate: function() {
+
+                var isValidUser = true;
+
+                isValidUser = this.$.firstName.validate() && isValidUser;
+
+                isValidUser = this.$.lastName.validate() && isValidUser;
+
+                isValidUser = this.$.dateOfBirth.validate() && isValidUser;
+
+                isValidUser = this.$.emailId.validate() && this.checkUserAvailabilityResponse.result === true && isValidUser;
+
+                isValidUser = this.$.password.validate() && this.isValidPassword && isValidUser;
+
+                return isValidUser;
+            },
+
+            _logUserResponse: function() {
+                console.log(this.saveUserResponse);
+            },
+
+            _generateRequest: function() {
+                return {
+                    userName: this.email,
+                    password: this.password,
+                    email: {
+                        isPrimary: true,
+                        value: this.email
+                    },
+                    name: {
+                        firstName: this.firstName,
+                        lastName: this.lastName,
+                        title: ""
+                    },
+                    dateOfBirth: {
+                        date: new Date(this.dateOfBirth),
+                        "time": "12:00 AM"
+                    }
+                };
+            },
+
+            _notifyEmailValidation: function() {
+                if (this.checkUserAvailabilityResponse) {
+                    if (this.checkUserAvailabilityResponse.status && !this.checkUserAvailabilityResponse.status.isSuccessful)
+                        this.notification = {
+                            isActive: true,
+                            type: 'error',
+                            message: 'failed to validate the user name'
+                        };
+                    else if (!this.checkUserAvailabilityResponse.result)
+                        this.notification = {
+                            isActive: true,
+                            type: 'warn',
+                            message: 'User name already exists'
+                        };
+                }
+            },
+
+            _notify: function() {
+
+                var self = this;
+
+                if (this.saveUserResponse && this.saveUserResponse.status) {
+                    this.notification = {
+                        isActive: true,
+                        type: this.saveUserResponse.status.isSuccessful ? 'success' : 'error',
+                        message: this.saveUserResponse.status.isSuccessful ? 'User saved successfully' : 'failed to save the user'
+                    }
+                    setTimeout(function() {
+                        self.set('notification.isActive', false);
+                    }, 5000)
+                }
+            }
+        });
+    </script>
+</dom-module>
