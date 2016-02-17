@@ -33,7 +33,7 @@
     "t-calendar": "atomelements/t-calendar#master",
     "t-password-input": "atomelements/t-password-input#master",
     "t-notify": "atomelements/t-notify#master",
-    "iron-ajax": "PolymerElements/iron-ajax#^1.1.1",
+    "iron-ajax": "PolymerElements/iron-ajax#^1.0.0",
     "t-mystique-auth": "travelnxtelements/t-mystique-auth#master"
   },
   "resolutions": {
