@@ -10,10 +10,10 @@
 <dom-module id="t-sign-up">
     <template>
         <style>
-            t-notify{
+            t-notify {
                 margin-bottom: 10px;
             }
-
+            
             t-button {
                 display: block;
             }
@@ -23,7 +23,7 @@
                 font-size: 12px;
             }
             
-            label, span{
+            label, span {
                 color: #bbbbbb;
             }
             
@@ -31,81 +31,42 @@
                 margin-top: 15px;
             }
         </style>
-        <t-notify active="[[notification.isActive]]" type="[[notification.type]]" message="[[notification.message]]"></t-notify>
-        <t-input id="firstName" type="text" error-message="Invalid input!" pattern="[a-zA-Z ']*" max-length="10" value="{{firstName::input}}" label="First Name" required auto-validate></t-input>
-        <t-input id="lastName" type="text" error-message="Invalid input!" pattern="[a-zA-Z ']*" max-length="10" value="{{lastName::input}}" label="Last Name" required auto-validate></t-input>
-        <t-calendar id="dateOfBirth" label="Date Of Birth" is-dob selected-date="{{dateOfBirth}}" required></t-calendar>
-        <t-input id="emailId" type="text" value="{{email::input}}" label="Email" required pattern='^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$' error-message="Invalid email!" required></t-input>
+
+        <t-notify active="[[notification.isActive]]" type="[[notification.type]]" message="[[notification.message]]"> </t-notify>
+        <t-input id="firstName" type="text" error-message="Invalid input!" pattern="[a-zA-Z ']*" max-length="10" label="First Name" required auto-validate> </t-input>
+        <t-input id="lastName" type="text" error-message="Invalid input!" pattern="[a-zA-Z ']*" max-length="10" label="Last Name" required auto-validate> </t-input>
+        <t-calendar id="dateOfBirth" label="Date Of Birth" is-dob required> </t-calendar>
+        <t-input id="emailId" type="text" label="Email" on-value-changed="_userNameAvailability" required pattern='^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$' error-message="Invalid email!" autoValidate required> </t-input>
         <label>This will be used as your user name.</label>
-        <t-password-input id="password" password="{{password}}" is-valid-password="{{isValidPassword}}"></t-password-input>
+        <t-password-input id="password" is-valid-password="{{isValidPassword}}"> </t-password-input>
         <span class="base">I have read and agree to terms of use and privacy policy.</span>
-        <t-button class="primary" label="Create Account" raised on-click="_saveNewUser"></t-button>
+        <t-button class="primary" label="Create Account" raised on-click="_saveNewUser"> </t-button>
         <span class="base">If you are an existing user sign in here</span>
-        <iron-ajax id="userAvailability" url="{{apiBaseUrl}}user/availability/[[email]]" content-type="application/json" last-response="{{checkUserAvailabilityResponse}}" debounce-duration="{{debounceDuration}}"></iron-ajax>
-        <iron-ajax id="saveUser" url="{{apiBaseUrl}}user" method="PUT" content-type="application/json" last-response="{{saveUserResponse}}"></iron-ajax>        
+        <iron-ajax id="userAvailability" url="{{_generateUsernameUrl(apiBaseUrl)}}" content-type="application/json" on-response="_availabilityResponse"> </iron-ajax>
+        <iron-ajax id="saveUser" url="{{apiBaseUrl}}user" method="PUT" content-type="application/json" on-response="_saveUserResponse"> </iron-ajax>
+
     </template>
+
     <script>
         Polymer({
 
             is: 't-sign-up',
 
-            properties: {
+            properties: {            
+                token: String
+            },
 
-                firstName: String,
-
-                lastName: String,
-
-                email: {
-                    type: String,
-                    observer: '_userNameAvailability'
-                },
-
-                dateOfBirth: Date,
-
-                password: String,
-
-                apiBaseUrl: {
-                    type: String,
-                    value: 'http://dev-mystiquecode.tavisca.com/api/'
-                },
-
-                token: {
-                    type: String,
-                    value: '',
-                    notify: true,
-                    reflectToAttribute: true
-                },
-
-                checkUserAvailabilityResponse: {
-                    type: Object,
-                    observer: '_notifyEmailValidation'
-                },
-
-                saveUserResponse: {
-                    type: Object,
-                    observer: '_notify'
-                },
-
-                type: {
-                    type: String,
-                    value: 'password'
-                },
-
-                notification: {
-                    type: Object,
-                    value: {
-                        isActive: false,
-                        type: '',
-                        message: ''
-                    }
-                }
+            attached: function() {
+                this.apiBaseUrl = 'http://dev-mystiquecode.tavisca.com/api/';
             },
 
             _userNameAvailability: function() {
 
-            this.set('notification.isActive', false);
+                this.set('notification.isActive', false);
 
-                if (this.$.emailId.validate()) {
+                if (this.$.emailId.value && this.$.emailId.validate()) {
+
+                    this.$.userAvailability.url = this.apiBaseUrl + 'user/availability/' + this.$.emailId.value;
                     this.$.userAvailability.params = {
                         "token": this.token
                     };
@@ -115,9 +76,7 @@
 
             _saveNewUser: function() {
 
-                var validUserData = this.validate();
-
-                if (!validUserData)
+                if (!this.validate())
                     return;
 
                 this.$.saveUser.params = {
@@ -127,78 +86,94 @@
                 this.$.saveUser.generateRequest();
             },
 
-            validate: function() {
-
-                var isValidUser = true;
-
-                isValidUser = this.$.firstName.validate() && isValidUser;
-
-                isValidUser = this.$.lastName.validate() && isValidUser;
-
-                isValidUser = this.$.dateOfBirth.validate() && isValidUser;
-
-                isValidUser = this.$.emailId.validate() && this.checkUserAvailabilityResponse.result === true && isValidUser;
-
-                isValidUser = this.$.password.validate() && this.isValidPassword && isValidUser;
-
-                return isValidUser;
-            },
-
-            _logUserResponse: function() {
-                console.log(this.saveUserResponse);
-            },
-
             _generateRequest: function() {
                 return {
-                    userName: this.email,
-                    password: this.password,
+                    userName: this.$.emailId.value,
+                    password: this.$.password.password,
                     email: {
                         isPrimary: true,
-                        value: this.email
+                        value: this.$.emailId.value
                     },
                     name: {
-                        firstName: this.firstName,
-                        lastName: this.lastName,
+                        firstName: this.$.firstName.value,
+                        lastName: this.$.lastName.value,
                         title: ""
                     },
                     dateOfBirth: {
-                        date: new Date(this.dateOfBirth),
+                        date: new Date(this.$.dateOfBirth.selectedDate),
                         "time": "12:00 AM"
                     }
                 };
             },
 
+            _availabilityResponse: function(e, data) {
+                this.checkUserAvailabilityResponse = data.xhr.response;
+                this._notifyEmailValidation();
+            },
+
+            _saveUserResponse: function(e, data) {
+                this.saveUserResponse = data.xhr.response;
+                this._notify();
+            },
+
             _notifyEmailValidation: function() {
-                if (this.checkUserAvailabilityResponse) {
-                    if (this.checkUserAvailabilityResponse.status && !this.checkUserAvailabilityResponse.status.isSuccessful)
-                        this.notification = {
-                            isActive: true,
-                            type: 'error',
-                            message: 'failed to validate the user name'
-                        };
-                    else if (!this.checkUserAvailabilityResponse.result)
-                        this.notification = {
-                            isActive: true,
-                            type: 'warn',
-                            message: 'User name already exists'
-                        };
-                }
+                if (!this.checkUserAvailabilityResponse || !this.checkUserAvailabilityResponse.status || !this.checkUserAvailabilityResponse.status.isSuccessful)
+                    this.notification = {
+                        isActive: true,
+                        type: 'error',
+                        message: 'failed to validate the user name'
+                    };
+                else if (this.checkUserAvailabilityResponse.result)
+                    this.notification = {
+                        isActive: true,
+                        type: 'success',
+                        message: 'User name available'
+                    };
+                else
+                    this.notification = {
+                        isActive: true,
+                        type: 'warn',
+                        message: 'User name already exists'
+                    };
+
+                this._hideNotification();
             },
 
             _notify: function() {
 
-                var self = this;
-
-                if (this.saveUserResponse && this.saveUserResponse.status) {
+                if (!this.saveUserResponse || !this.saveUserResponse.status || !this.saveUserResponse.status.isSuccessful)
                     this.notification = {
                         isActive: true,
-                        type: this.saveUserResponse.status.isSuccessful ? 'success' : 'error',
-                        message: this.saveUserResponse.status.isSuccessful ? 'User saved successfully' : 'failed to save the user'
+                        type: 'error',
+                        message: 'Could not save the user'
+                    };
+                else
+                    this.notification = {
+                        isActive: true,
+                        type: 'success',
+                        message: 'User saved successfully'
                     }
-                    setTimeout(function() {
-                        self.set('notification.isActive', false);
-                    }, 5000)
-                }
+
+                this._hideNotification();
+            },
+
+            //to be removed once loaders are in place
+            _hideNotification: function() {
+                var self = this;
+                setTimeout(function() {
+                    self.set('notification.isActive', false);
+                }, 5000);
+            },
+
+            validate: function() {
+
+                var isValidUser = true;
+                isValidUser = this.$.firstName.validate() && isValidUser;
+                isValidUser = this.$.lastName.validate() && isValidUser;
+                isValidUser = this.$.dateOfBirth.validate() && isValidUser;
+                isValidUser = this.$.emailId.validate() && this.checkUserAvailabilityResponse.result === true && isValidUser;
+                isValidUser = this.$.password.validate() && this.isValidPassword && isValidUser;
+                return isValidUser;
             }
         });
     </script>

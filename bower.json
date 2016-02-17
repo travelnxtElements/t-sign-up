@@ -3,7 +3,6 @@
   "version": "1.0.0",
   "authors": [
     "Rahul Pilkhwal <rahul.pilkhwal@tavisca.com>",
-    "Shailesh Kumar Srivastava <ssrivastava@tavisca.com>",
     "Sounak Pal <spal@tavisca.com>",
     "Ajinkya Tejankar <tejankarajinkya@gmail.com>",
     "Manoj Chalode <chalodem@gmail.com>"
@@ -34,7 +33,8 @@
     "t-calendar": "atomelements/t-calendar#master",
     "t-password-input": "atomelements/t-password-input#master",
     "t-notify": "atomelements/t-notify#master",
-    "iron-ajax": "PolymerElements/iron-ajax#^1.1.1"
+    "iron-ajax": "PolymerElements/iron-ajax#^1.1.1",
+    "t-mystique-auth": "travelnxtelements/t-mystique-auth#master"
   },
   "resolutions": {
     "t-checkbox": "master",
