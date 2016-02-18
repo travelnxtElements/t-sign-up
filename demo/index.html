@@ -8,6 +8,8 @@
     <title>t-sign-up demo</title>
     <link rel="import" href="../../polymer/polymer.html">
     <link rel="import" href="../t-sign-up.html">
+    <link rel="import" href="../t-sign-up-api.html">
+    <link rel="import" href="../t-validate-email-api.html">
     <link rel="import" href="../../t-mystique-auth/t-mystique-auth.html">
 </head>
 <style>
@@ -18,12 +20,69 @@ h1 {
 </style>
 
 <body>
-    <template is="dom-bind">
-        <t-mystique-auth id="tokenCall" name="nxtb2bsite" url="http://dev-mystiquecode.tavisca.com/api/authentication/authenticate/context" token-response="{{token}}"></t-mystique-auth>
+    <template is="dom-bind" id="app">
+        <t-mystique-auth 
+            id="tokenCall" 
+            name="nxtb2bsite" 
+            url="http://dev-mystiquecode.tavisca.com/api/authentication/authenticate/context" 
+            token-response="{{token}}">
+        </t-mystique-auth>
+
+        <t-sign-up-api 
+            id="signUpApi"
+            on-t-sign-up-api-success="registerSuccessEventHandler"
+            on-t-sign-up-api-error="registerFailureEventHandler"
+            api-base-url="http://dev-mystiquecode.tavisca.com/" 
+            api-relative-url="api/user" 
+            auth-token="{{token.authenticationToken}}">
+        </t-sign-up-api>
+
+        <t-validate-email-api
+            id="validateApi"
+            on-t-validate-email-api-success="validateEmailSuccessEventHandler"
+            on-t-validate-email-api-error="validateEmailFailureEventHandler"
+            api-base-url="http://dev-mystiquecode.tavisca.com/"
+            api-relative-url="api/user/availability"
+            auth-token="{{token.authenticationToken}}">
+        </t-validate-email-api>
+
         <h1>Register User</h1>
-        <t-sign-up token="{{token.authenticationToken}}"></t-sign-up>
+
+        <t-sign-up
+            id="signUp"
+            on-t-sign-up-register="registerEventHandler" 
+            on-t-sign-up-validate-email="validateEmailEventHandler">
+        </t-sign-up>
     </template>
 </body>
 <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+<script>
+(function(undefined) {
+
+    var template = document.querySelector('#app');
+
+    template.registerEventHandler = function(e, data) {
+        this.$.signUpApi.signUp(data);
+    };
+    template.validateEmailEventHandler = function(e, data) {
+        this.$.validateApi.validateEmail(data);
+    };
+
+    template.registerSuccessEventHandler = function(e, data) {
+        this.$.signUp.notify("user registered successfully");
+    };
+    template.registerFailureEventHandler = function(e, data) {
+        this.$.signUp.notify("user registration failed");
+    };
+
+    template.validateEmailSuccessEventHandler = function(e, data) {
+        this.$.signUp.notify("email validated successfully");
+    };
+    template.validateEmailFailureEventHandler = function(e, data) {
+        this.$.signUp.notify("email validation failed");
+    };
+
+})();
+</script>
 
 </html>
