@@ -2,12 +2,14 @@
 <link rel="import" href="../paper-toast/paper-toast.html">
 <!-- <link rel="import" href="../t-loader/t-loader.html"> -->
 <link rel="import" href="../iron-ajax/iron-ajax.html">
+<link rel="import" href="../iron-flex-layout/classes/iron-flex-layout.html">
 <link rel="import" href="../t-input/t-input.html">
 <link rel="import" href="../t-calendar/t-calendar.html">
 <link rel="import" href="../t-password-input/t-password-input.html">
 <link rel="import" href="../t-button/t-button.html">
-<link rel="import" href="./t-sign-up-api.html">
 <link rel="import" href="../t-shared-components/theme.html">
+<link rel="import" href="../t-text-container/travel-element-styles.html">
+<link rel="import" href="./t-sign-up-api.html">
 <!--
     `t-sign-up` is a registration component used for registrating new users.
     This component considers email as default user name.
@@ -28,52 +30,31 @@ Example:
         </t-sign-up>-->
 <dom-module id="t-sign-up">
     <template>
-        <style>
-        t-loader {
-            position: absolute;
-            top: 50%;
-            left: 40%;
-        }
-        
-        t-button {
+        <style include="travel-element-styles">
+        :host {
+            font-family: var(--primary-font-family, 'Open sans');
+            font-size: var(--font-12, 12px);
             display: block;
         }
         
-        label,
-        span,
-        ul li {
-            font-family: 'Open Sans', sans-serif;
-            font-size: 12px;
-        }
-        
-        label,
-        span {
-            color: #bbbbbb;
-        }
-        
-        t-input + t-input,
-        t-calendar + t-input,
-        t-calendar {
-            margin-top: 15px;
-        }
         </style>
-        <!-- <t-loader id="loader"></t-loader> -->
-        <paper-toast id="toast"></paper-toast>
-        <t-input id="firstName" value="{{firstName}}" type="text" error-message="Invalid input!" pattern="[a-zA-Z ']*" max-length="10" label="First Name" required auto-validate>
-        </t-input>
-        <t-input id="lastName" value="{{lastName}}" type="text" error-message="Invalid input!" pattern="[a-zA-Z ']*" max-length="10" label="Last Name" required auto-validate>
-        </t-input>
-        <t-calendar id="dateOfBirth" selected-date="{{dateOfBirth}}" label="Date Of Birth" is-dob required>
-        </t-calendar>
-        <t-input id="emailId" value="{{emailId}}" type="text" label="Email" on-value-changed="_userNameAvailability" required pattern='^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$' error-message="Invalid email!" autoValidate required>
-        </t-input>
-        <label>This will be used as your user name.</label>
-        <t-password-input id="password" value="{{password}}">
-        </t-password-input>
-        <span class="base">I have read and agree to terms of use and privacy policy.</span>
-        <t-button class="primary" label="Create Account" raised on-click="_saveNewUser">
-        </t-button>
-        <span class="base">If you are an existing user sign in here</span>
+        <div class="secondary-text section">
+            <t-input id="firstName" value="{{firstName}}" type="text" error-message="Invalid input!" pattern="[a-zA-Z ']*" max-length="10" label="First Name" class="margin-bottom-medium" required ></t-input>
+
+            <t-input id="lastName" value="{{lastName}}" type="text" error-message="Invalid input!" pattern="[a-zA-Z ']*" max-length="10" label="Last Name" class="margin-bottom-medium" required ></t-input>
+
+            <t-calendar id="dateOfBirth" selected-date="{{dateOfBirth}}" label="Date Of Birth" is-dob class="margin-bottom-medium" required></t-calendar>
+
+            <t-input id="emailId" value="{{emailId}}" type="text" label="Email" on-change="_userNameAvailability" class="margin-bottom-medium" pattern='^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$' error-message="Invalid email!" autoValidate required></t-input>
+
+            <label class="margin-bottom block">Note* Email will be used as your user name.</label>
+            <t-password-input id="password" value="{{password}}" class="margin-bottom-medium" required>
+            </t-password-input>
+            <label class="margin-bottom block">I have read and agree to terms of use and privacy policy.</label>
+            <t-button class="primary block margin-bottom" label="Create Account" raised on-click="_saveNewUser">
+            </t-button>
+            <div class="margin-bottom">If you are an existing user <a class="link-style">sign in</a> here</div>
+        </div>
     </template>
 </dom-module>
 <script>
@@ -143,29 +124,19 @@ Polymer({
         };
     },
 
-    _availabilityResponse: function(e, data) {
-        this.checkUserAvailabilityResponse = data.xhr.response;
-    },
-
-    _saveUserResponse: function(e, data) {
-        this.saveUserResponse = data.xhr.response;
-    },
-
-    notify: function(data) {
-        this.$.toast.text = data;
-        this.$.toast.open();
-        // this.$.loader.active = false;
-    },
-
+    /**
+     * To run the validate method in the entire component
+     * This is a required field.
+     */
     validate: function() {
-
-        var isValidUser = true;
-        isValidUser = this.$.firstName.validate() && isValidUser;
-        isValidUser = this.$.lastName.validate() && isValidUser;
-        isValidUser = this.$.dateOfBirth.validate() && isValidUser;
-        isValidUser = this.$.emailId.validate();
-        isValidUser = this.$.password.validate() && isValidUser;
-        return isValidUser;
+        var check = true;
+        var x = this.querySelectorAll('[required]');
+        for (var i = 0; i < x.length; i++) {
+            if (!x[i].validate()) {
+                check = false;
+            }
+        }
+        return check;
     }
 });
 </script>

@@ -11,11 +11,25 @@
     <link rel="import" href="../t-sign-up-api.html">
     <link rel="import" href="../t-validate-email-api.html">
     <link rel="import" href="../../t-mystique-auth/t-mystique-auth.html">
+    <link rel="import" href="../../paper-toast/paper-toast.html">
 </head>
 <style>
 h1 {
     text-align: center;
     font-family: 'Open Sans', sans-serif;
+}
+body{
+    margin: 0;
+}
+#toast{
+    top: 0;
+    bottom: inherit;
+    -webkit-transform: translateY(-100px);
+    transform: translateY(-100px);
+}
+#toast.paper-toast-open{
+    -webkit-transform: translateY(0);
+    transform: translateY(0);
 }
 </style>
 
@@ -45,19 +59,16 @@ h1 {
             api-relative-url="api/user/availability"
             auth-token="{{token.authenticationToken}}">
         </t-validate-email-api>
-
-        <h1>Register User</h1>
-
         <t-sign-up
             id="signUp"
             on-t-sign-up-register="registerEventHandler" 
             on-t-sign-up-validate-email="validateEmailEventHandler">
         </t-sign-up>
+        <paper-toast id="toast" text="Hello world!"></paper-toast>
     </template>
 </body>
 <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
 <script>
-(function(undefined) {
 
     var template = document.querySelector('#app');
 
@@ -69,20 +80,23 @@ h1 {
     };
 
     template.registerSuccessEventHandler = function(e, data) {
-        this.$.signUp.notify("user registered successfully");
+        this.$.toast.text ="user registered successfully";
+        this.$.toast.open();
     };
     template.registerFailureEventHandler = function(e, data) {
-        this.$.signUp.notify("user registration failed");
+        this.$.toast.text ="user registration failed";
+        this.$.toast.open();
     };
 
     template.validateEmailSuccessEventHandler = function(e, data) {
-        this.$.signUp.notify("email validated successfully");
+        this.$.toast.text ="email validated successfully";
+        this.$.toast.open();
     };
     template.validateEmailFailureEventHandler = function(e, data) {
-        this.$.signUp.notify("email validation failed");
+        this.$.toast.text ="email validation failed";
+        this.$.toast.open();
     };
 
-})();
 </script>
 
 </html>
