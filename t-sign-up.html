@@ -1,6 +1,6 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../paper-toast/paper-toast.html">
-<link rel="import" href="../t-loader/t-loader.html">
+<!-- <link rel="import" href="../t-loader/t-loader.html"> -->
 <link rel="import" href="../iron-ajax/iron-ajax.html">
 <link rel="import" href="../t-input/t-input.html">
 <link rel="import" href="../t-calendar/t-calendar.html">
@@ -57,7 +57,7 @@ Example:
             margin-top: 15px;
         }
         </style>
-        <t-loader id="loader"></t-loader>
+        <!-- <t-loader id="loader"></t-loader> -->
         <paper-toast id="toast"></paper-toast>
         <t-input id="firstName" value="{{firstName}}" type="text" error-message="Invalid input!" pattern="[a-zA-Z ']*" max-length="10" label="First Name" required auto-validate>
         </t-input>
@@ -118,16 +118,18 @@ Polymer({
 
     _userNameAvailability: function() {
 
-        if (this.emailId && this.$.emailId.validate()){
-            this.$.loader.active = true;
+        if (this.emailId && this.$.emailId.validate()) {
+            // this.$.loader.active = true;
             this.fire('t-sign-up-validate-email', {
                 email: this.emailId
-            });            
+            });
         }
     },
 
-    _saveNewUser: function() {        
-        this.$.loader.active = true;
+    _saveNewUser: function() {
+        if (!this.validate())
+            return;
+        // this.$.loader.active = true;
         this.fire('t-sign-up-register', this._generateRequest());
     },
 
@@ -150,15 +152,9 @@ Polymer({
     },
 
     notify: function(data) {
-        this.$.toast.text = data;
-        this.$.toast.open();
-        this.$.loader.active = false;
-    },
-
-    _validateEmail: function() {
-        if (this.checkUserAvailabilityResponse)
-            return this.$.emailId.validate() && this.checkUserAvailabilityResponse.result === true && isValidUser;
-        return false;
+        // this.$.toast.text = data;
+        // this.$.toast.open();
+        // this.$.loader.active = false;
     },
 
     validate: function() {
@@ -167,7 +163,7 @@ Polymer({
         isValidUser = this.$.firstName.validate() && isValidUser;
         isValidUser = this.$.lastName.validate() && isValidUser;
         isValidUser = this.$.dateOfBirth.validate() && isValidUser;
-        isValidUser = this._validateEmail();
+        isValidUser = this.$.emailId.validate();
         isValidUser = this.$.password.validate() && isValidUser;
         return isValidUser;
     }
