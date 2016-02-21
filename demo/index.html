@@ -8,8 +8,8 @@
     <title>t-sign-up demo</title>
     <link rel="import" href="../../polymer/polymer.html">
     <link rel="import" href="../t-sign-up.html">
-    <link rel="import" href="../t-sign-up-api.html">
-    <link rel="import" href="../t-validate-email-api.html">
+    <link rel="import" href="../t-create-user-api.html">
+    <link rel="import" href="../t-user-availability-api.html">
     <link rel="import" href="../../t-mystique-auth/t-mystique-auth.html">
     <link rel="import" href="../../paper-toast/paper-toast.html">
 </head>
@@ -42,28 +42,17 @@ body{
             token-response="{{token}}">
         </t-mystique-auth>
 
-        <t-sign-up-api 
-            id="signUpApi"
-            on-t-sign-up-api-success="registerSuccessEventHandler"
-            on-t-sign-up-api-error="registerFailureEventHandler"
-            api-base-url="http://dev-mystiquecode.tavisca.com/" 
-            api-relative-url="api/user" 
-            auth-token="{{token.authenticationToken}}">
-        </t-sign-up-api>
-
-        <t-validate-email-api
+        <t-user-availability-api
             id="validateApi"
-            on-t-validate-email-api-success="validateEmailSuccessEventHandler"
-            on-t-validate-email-api-error="validateEmailFailureEventHandler"
+            on-t-user-availability-api-success="validateEmailSuccessEventHandler"
+            on-t-user-availability-api-error="validateEmailFailureEventHandler"
             api-base-url="http://dev-mystiquecode.tavisca.com/"
             api-relative-url="api/user/availability"
             auth-token="{{token.authenticationToken}}">
-        </t-validate-email-api>
-        <t-sign-up
-            id="signUp"
-            on-t-sign-up-register="registerEventHandler" 
-            on-t-sign-up-validate-email="validateEmailEventHandler">
-        </t-sign-up>
+        </t-user-availability-api>
+
+        <t-sign-up id="signUp" token = "{{token.authenticationToken}}"></t-sign-up>
+
         <paper-toast id="toast" text="Hello world!"></paper-toast>
     </template>
 </body>

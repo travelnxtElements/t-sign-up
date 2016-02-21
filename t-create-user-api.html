@@ -1,7 +1,7 @@
 <link rel="import" href="../polymer/polymer.html" />
 <link rel="import" href="../iron-ajax/iron-ajax.html">
 <link rel="import" href="../t-shared-lib/t-provider-behavior.html">
-<dom-module id="t-sign-up-api">
+<dom-module id="t-create-user-api">
     <template>
         <iron-ajax id="ajaxCall" method="PUT" content-type="application/json" handle-as="json" verbose>
         </iron-ajax>
@@ -9,7 +9,7 @@
 </dom-module>
 <script>
 Polymer({
-    is: "t-sign-up-api",
+    is: "t-create-user-api",
 
     behaviors: [TravelNxt.Behaviors.ProviderBehavior],
 
@@ -46,32 +46,32 @@ Polymer({
 
     _successCallback: function(event) {
         if (!event.detail.response || !event.detail.response.status || event.detail.response.status.code == 500)
-            this.fire('t-sign-up-api-error', {
+            this.fire('t-create-user-api-error', {
                 message: 'Operation error occured, please try again.',
                 code: 500
             }, {
                 bubbles: true
             });
         else if (!event.detail.response.status.isSuccessful) {
-            this.fire('t-sign-up-api-error', event.detail.response.status, {
+            this.fire('t-create-user-api-error', event.detail.response.status, {
                 bubbles: true
             });
         } else {
             //do special handling as per api status codes
-            this.fire('t-sign-up-api-success', event.detail.response, {
+            this.fire('t-create-user-api-success', event.detail.response, {
                 bubbles: true
             });
         }
     },
 
     _errorCallback: function(event) {
-        this.fire('t-sign-up-api-error', {
+        this.fire('t-create-user-api-error', {
             message: 'Connection error occured, please try again.',
             code: event.request.status
         }, {
             bubbles: true
         });
-        console.error('t-sign-up-api-error', event);
+        console.error('t-create-user-api-error', event);
     },
 
 });

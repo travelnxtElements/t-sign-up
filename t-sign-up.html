@@ -1,6 +1,5 @@
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../paper-toast/paper-toast.html">
-<!-- <link rel="import" href="../t-loader/t-loader.html"> -->
 <link rel="import" href="../iron-ajax/iron-ajax.html">
 <link rel="import" href="../iron-flex-layout/classes/iron-flex-layout.html">
 <link rel="import" href="../t-input/t-input.html">
@@ -9,7 +8,7 @@
 <link rel="import" href="../t-button/t-button.html">
 <link rel="import" href="../t-shared-components/theme.html">
 <link rel="import" href="../t-text-container/travel-element-styles.html">
-<link rel="import" href="./t-sign-up-api.html">
+<link rel="import" href="./t-create-user-api.html">
 <!--
     `t-sign-up` is a registration component used for registrating new users.
     This component considers email as default user name.
@@ -17,7 +16,7 @@
     'on-t-sign-up-validate-email' event is fired when validation needs to be done.
     The event handler should use 't-validate-email-api' component's 'validateEmail' method to check availability.
     'on-t-sign-up-register' is fired while saving user data.
-    The event handler should use 't-sign-up-api' component's 'signUp' method to save user.
+    The event handler should use 't-create-user-api' component's 'signUp' method to save user.
 
 Example:
         without event handlers
@@ -36,17 +35,12 @@ Example:
             font-size: var(--font-12, 12px);
             display: block;
         }
-        
         </style>
         <div class="secondary-text section">
-            <t-input id="firstName" value="{{firstName}}" type="text" error-message="Invalid input!" pattern="[a-zA-Z ']*" max-length="10" label="First Name" class="margin-bottom-medium" required ></t-input>
-
-            <t-input id="lastName" value="{{lastName}}" type="text" error-message="Invalid input!" pattern="[a-zA-Z ']*" max-length="10" label="Last Name" class="margin-bottom-medium" required ></t-input>
-
+            <t-input id="firstName" value="{{firstName}}" type="text" error-message="Invalid input!" pattern="[a-zA-Z ']*" max-length="10" label="First Name" class="margin-bottom-medium" required></t-input>
+            <t-input id="lastName" value="{{lastName}}" type="text" error-message="Invalid input!" pattern="[a-zA-Z ']*" max-length="10" label="Last Name" class="margin-bottom-medium" required></t-input>
             <t-calendar id="dateOfBirth" selected-date="{{dateOfBirth}}" label="Date Of Birth" is-dob class="margin-bottom-medium" required></t-calendar>
-
             <t-input id="emailId" value="{{emailId}}" type="text" label="Email" on-change="_userNameAvailability" class="margin-bottom-medium" pattern='^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$' error-message="Invalid email!" autoValidate required></t-input>
-
             <label class="margin-bottom block">Note* Email will be used as your user name.</label>
             <t-password-input id="password" value="{{password}}" class="margin-bottom-medium" required>
             </t-password-input>
@@ -54,6 +48,12 @@ Example:
             <t-button class="primary block margin-bottom" label="Create Account" raised on-click="_saveNewUser">
             </t-button>
             <div class="margin-bottom">If you are an existing user <a class="link-style">sign in</a> here</div>
+
+            <!-- #new-code -->
+            <!-- these are the api references with success and failure callback handlers as notify function-->
+            <!-- callback handlers may be handled separetely-->
+            <t-create-user-api id="signUpApi" api-base-url="http://dev-mystiquecode.tavisca.com/" api-relative-url="api/user" auth-token="{{token}}" on-t-create-user-api-error="notify" on-t-create-user-api-success="notify"></t-create-user-api>
+            <t-user-availability-api id="availabilityApi" api-base-url="http://dev-mystiquecode.tavisca.com/" api-relative-url="api/user/availability" auth-token="{{token}}" on-t-user-availability-api-success="notify" on-t-user-availability-api-error="notify"></t-user-availability-api>
         </div>
     </template>
 </dom-module>
@@ -100,18 +100,30 @@ Polymer({
     _userNameAvailability: function() {
 
         if (this.emailId && this.$.emailId.validate()) {
-            // this.$.loader.active = true;
-            this.fire('t-sign-up-validate-email', {
+
+            // #new-code
+            //this is the change
+            //instead of firing an event, signUp method is called using api reference
+            this.$.availabilityApi.validateEmail({
                 email: this.emailId
             });
+
+            // this.$.signUpApi.signUp(this._generateRequest());
+            //     this.fire('t-sign-up-validate-email', {
+            //         email: this.emailId
+            //     });
         }
     },
 
     _saveNewUser: function() {
         if (!this.validate())
             return;
-        // this.$.loader.active = true;
-        this.fire('t-sign-up-register', this._generateRequest());
+
+        // #new-code
+        //this is the change
+        //instead of firing an event, signUp method is called using api reference
+        this.$.signUpApi.signUp(this._generateRequest());
+        // this.fire('t-sign-up-register', this._generateRequest());
     },
 
     _generateRequest: function() {
@@ -122,6 +134,15 @@ Polymer({
             lastName: this.lastName,
             dateOfBirth: new Date(this.dateOfBirth)
         };
+    },
+ 
+    // #new-code
+    /**
+     * This id the callback from component APIs
+     * This method can fire success/failure events which may be consumed by external components
+     */
+    notify: function(status, reponse) {
+        console.log(reponse.code + '\n' + reponse.message);
     },
 
     /**
