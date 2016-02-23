@@ -53,7 +53,7 @@ Example:
             <label class="margin-bottom block">I have read and agree to terms of use and privacy policy.</label>
             <t-button class="primary block margin-bottom" label="Create Account" raised on-click="_saveNewUser">
             </t-button>
-            <div class="margin-bottom">If you are an existing user <a class="link-style">sign in</a> here</div>
+            <div class="margin-bottom">If you are an existing user <a class="link-style" on-tap="_goToSignInPage">sign in</a> here</div>
         </div>
     </template>
 </dom-module>
@@ -112,6 +112,10 @@ Polymer({
             return;
         // this.$.loader.active = true;
         this.fire('t-sign-up-register', this._generateRequest());
+    },
+
+    _goToSignInPage: function() {
+        this.fire('t-go-sign-in');
     },
 
     _generateRequest: function() {
