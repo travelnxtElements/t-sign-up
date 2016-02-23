@@ -12,6 +12,8 @@
     <link rel="import" href="../t-user-availability-api.html">
     <link rel="import" href="../../t-mystique-auth/t-mystique-auth.html">
     <link rel="import" href="../../paper-toast/paper-toast.html">
+    <link rel="import" href="../../t-notify/t-notify.html">
+<link rel="import" href="../../t-shared-components/theme.html">
 </head>
 <style>
 h1 {
@@ -35,6 +37,9 @@ body{
 
 <body>
     <template is="dom-bind" id="app">
+        <template is="dom-if" if="{{userAlreadyExist}}">
+            <t-notify active message="Email already exists." type="warn"></t-notify>
+        </template>
         <t-mystique-auth 
             id="tokenCall" 
             name="nxtb2bsite" 
@@ -61,6 +66,8 @@ body{
         </t-user-availability-api>
         <t-sign-up
             id="signUp"
+            policies-url="http://demo.travelnxt.com/privacypolicy"
+            terms-url="http://demo.travelnxt.com/terms"
             on-t-sign-up-register="registerEventHandler" 
             on-t-sign-up-validate-email="checkAvailabilityEventHandler">
         </t-sign-up>
@@ -91,10 +98,13 @@ body{
     template.checkAvailabilitySuccessEventHandler = function(e, data) {
         this.$.toast.text ="email validated successfully";
         this.$.toast.open();
+        this.$.signUp.onEmailValidate();
     };
     template.checkAvailabilityFailureEventHandler = function(e, data) {
         this.$.toast.text =data.message;
         this.$.toast.open();
+        this.$.signUp.onEmailValidate();
+        this.userAlreadyExist = true;
     };
 
 </script>

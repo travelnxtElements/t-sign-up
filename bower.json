@@ -31,6 +31,8 @@
     "t-button": "atomelements/t-button#master",
     "t-checkbox": "atomelements/t-checkbox#master",
     "t-calendar": "atomelements/t-calendar#master",
+    "t-loader": "atomelements/t-loader#master",
+    "t-notify": "atomelements/t-notify#master",
     "t-password-input": "atomelements/t-password-input#master",
     "iron-ajax": "PolymerElements/iron-ajax#^1.0.0",
     "t-mystique-auth": "travelnxtelements/t-mystique-auth#master",
