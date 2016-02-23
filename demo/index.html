@@ -9,7 +9,7 @@
     <link rel="import" href="../../polymer/polymer.html">
     <link rel="import" href="../t-sign-up.html">
     <link rel="import" href="../t-sign-up-api.html">
-    <link rel="import" href="../t-validate-email-api.html">
+    <link rel="import" href="../t-user-availability-api.html">
     <link rel="import" href="../../t-mystique-auth/t-mystique-auth.html">
     <link rel="import" href="../../paper-toast/paper-toast.html">
 </head>
@@ -37,8 +37,8 @@ body{
     <template is="dom-bind" id="app">
         <t-mystique-auth 
             id="tokenCall" 
-            name="nxtb2bsite" 
-            url="http://dev-mystiquecode.tavisca.com/api/authentication/authenticate/context" 
+            name="mystiquedemo" 
+            url="http://qa-mystiquecode.tavisca.com/api/authentication/authenticate/context" 
             token-response="{{token}}">
         </t-mystique-auth>
 
@@ -46,23 +46,23 @@ body{
             id="signUpApi"
             on-t-sign-up-api-success="registerSuccessEventHandler"
             on-t-sign-up-api-error="registerFailureEventHandler"
-            api-base-url="http://dev-mystiquecode.tavisca.com/" 
+            api-base-url="http://qa-mystiquecode.tavisca.com/" 
             api-relative-url="api/user" 
             auth-token="{{token.authenticationToken}}">
         </t-sign-up-api>
 
-        <t-validate-email-api
+        <t-user-availability-api
             id="validateApi"
-            on-t-validate-email-api-success="validateEmailSuccessEventHandler"
-            on-t-validate-email-api-error="validateEmailFailureEventHandler"
-            api-base-url="http://dev-mystiquecode.tavisca.com/"
+            on-t-user-availability-api-success="checkAvailabilitySuccessEventHandler"
+            on-t-user-availability-api-error="checkAvailabilityFailureEventHandler"
+            api-base-url="http://qa-mystiquecode.tavisca.com/"
             api-relative-url="api/user/availability"
             auth-token="{{token.authenticationToken}}">
-        </t-validate-email-api>
+        </t-user-availability-api>
         <t-sign-up
             id="signUp"
             on-t-sign-up-register="registerEventHandler" 
-            on-t-sign-up-validate-email="validateEmailEventHandler">
+            on-t-sign-up-validate-email="checkAvailabilityEventHandler">
         </t-sign-up>
         <paper-toast id="toast" text="Hello world!"></paper-toast>
     </template>
@@ -75,8 +75,8 @@ body{
     template.registerEventHandler = function(e, data) {
         this.$.signUpApi.signUp(data);
     };
-    template.validateEmailEventHandler = function(e, data) {
-        this.$.validateApi.validateEmail(data);
+    template.checkAvailabilityEventHandler = function(e, data) {
+        this.$.validateApi.checkAvailability(data);
     };
 
     template.registerSuccessEventHandler = function(e, data) {
@@ -84,16 +84,16 @@ body{
         this.$.toast.open();
     };
     template.registerFailureEventHandler = function(e, data) {
-        this.$.toast.text ="user registration failed";
+        this.$.toast.text = data.message;
         this.$.toast.open();
     };
 
-    template.validateEmailSuccessEventHandler = function(e, data) {
+    template.checkAvailabilitySuccessEventHandler = function(e, data) {
         this.$.toast.text ="email validated successfully";
         this.$.toast.open();
     };
-    template.validateEmailFailureEventHandler = function(e, data) {
-        this.$.toast.text ="email validation failed";
+    template.checkAvailabilityFailureEventHandler = function(e, data) {
+        this.$.toast.text =data.message;
         this.$.toast.open();
     };
 

@@ -42,5 +42,10 @@
     "t-checkbox": "master",
     "t-input": "master",
     "t-shared-components": "master"
+  },
+  "devDependencies": {
+    "web-component-tester": "*",
+    "webcomponentsjs": "~0.7.14",
+    "iron-component-page": "PolymerElements/iron-component-page#~1.0.6"
   }
 }
