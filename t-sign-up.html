@@ -47,6 +47,7 @@ Example:
             transform: scale(0.5);
         }
         </style>
+        <t-notify id="notify"></t-notify>
         <div class="secondary-text section">
             <t-input id="firstName" value="{{firstName}}" type="text" error-message="You missed this." pattern="[a-zA-Z ']*" max-length="10" label="First Name" class="margin-bottom-medium" required auto-validate></t-input>
             <t-input id="lastName" value="{{lastName}}" type="text" error-message="You missed this." pattern="[a-zA-Z ']*" max-length="10" label="Last Name" class="margin-bottom-medium" required auto-validate></t-input>
@@ -146,6 +147,7 @@ Polymer({
                 email: this.emailId
             });
             this.userChecking = true;
+            this.$.notify.active = false;
         }
     },
 
@@ -154,6 +156,7 @@ Polymer({
             return;
         // this.$.loader.active = true;
         this.fire('t-sign-up-register', this._generateRequest());
+        this.$.notify.active = false;
     },
 
     _goToSignInPage: function() {
@@ -168,6 +171,12 @@ Polymer({
             lastName: this.lastName,
             dateOfBirth: new Date(this.dateOfBirth)
         };
+    },
+
+    /*Run the method when the response comes back with Already Used Email */
+    onEmailValidateFailure: function(response){
+        this.$.notify.msg = response.message;
+        this.$.notify.active = true;
     },
 
     /*Run the method when the response comes back with response */

@@ -37,9 +37,6 @@ body{
 
 <body>
     <template is="dom-bind" id="app">
-        <template is="dom-if" if="{{userAlreadyExist}}">
-            <t-notify active message="Email already exists." type="warn"></t-notify>
-        </template>
         <t-mystique-auth 
             id="tokenCall" 
             name="nxtb2bsite" 
@@ -86,25 +83,25 @@ body{
         this.$.validateApi.checkAvailability(data);
     };
 
-    template.registerSuccessEventHandler = function(e, data) {
+    template.registerSuccessEventHandler = function(e, response) {
         this.$.toast.text ="user registered successfully";
         this.$.toast.open();
     };
-    template.registerFailureEventHandler = function(e, data) {
-        this.$.toast.text = data.message;
+    template.registerFailureEventHandler = function(e, response) {
+        this.$.toast.text = response.message;
         this.$.toast.open();
     };
 
-    template.checkAvailabilitySuccessEventHandler = function(e, data) {
+    template.checkAvailabilitySuccessEventHandler = function(e, response) {
         this.$.toast.text ="email validated successfully";
         this.$.toast.open();
         this.$.signUp.onEmailValidate();
     };
-    template.checkAvailabilityFailureEventHandler = function(e, data) {
-        this.$.toast.text =data.message;
+    template.checkAvailabilityFailureEventHandler = function(e, response) {
+        this.$.toast.text =response.message;
         this.$.toast.open();
         this.$.signUp.onEmailValidate();
-        this.userAlreadyExist = true;
+        this.$.signUp.onEmailValidateFailure(response);
     };
 
 </script>
