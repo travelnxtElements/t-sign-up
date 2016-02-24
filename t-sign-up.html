@@ -161,7 +161,7 @@ Polymer({
     },
 
     _goToSignInPage: function() {
-        this.fire('t-go-sign-in');
+        this.fire('t-sign-up-go-signin');
     },
 
     _generateRequest: function() {
@@ -234,10 +234,6 @@ Polymer({
         this.$.notify.active = true;   
     },
 
-    _goSignIn: function() {
-        this.fire('t-sign-up-go-signin');
-        //alert('Go to signin page');
-    },
     _disableButton: function(element) {
         element.disabled = true;
     },
