@@ -12,7 +12,6 @@
     <link rel="import" href="../t-user-availability-api.html">
     <link rel="import" href="../../t-mystique-auth/t-mystique-auth.html">
     <link rel="import" href="../../paper-toast/paper-toast.html">
-    <link rel="import" href="../../t-notify/t-notify.html">
 <link rel="import" href="../../t-shared-components/theme.html">
 </head>
 <style>
@@ -37,6 +36,9 @@ body{
 
 <body>
     <template is="dom-bind" id="app">
+        <template is="dom-if" if="{{userAlreadyExist}}">
+            <t-notify active message="Email already exists." type="warn"></t-notify>
+        </template>
         <t-mystique-auth 
             id="tokenCall" 
             name="nxtb2bsite" 
@@ -84,23 +86,24 @@ body{
     };
 
     template.registerSuccessEventHandler = function(e, response) {
-        this.$.toast.text ="user registered successfully";
-        this.$.toast.open();
+        // this.$.toast.text ="user registered successfully";
+        // this.$.toast.open();
+        this.$.signUp.onSaveUserSuccess(response);
     };
     template.registerFailureEventHandler = function(e, response) {
-        this.$.toast.text = response.message;
-        this.$.toast.open();
+        // this.$.toast.text = response.message;
+        // this.$.toast.open();
+        this.$.signUp.onSaveUserFailure(response);
     };
 
     template.checkAvailabilitySuccessEventHandler = function(e, response) {
-        this.$.toast.text ="email validated successfully";
-        this.$.toast.open();
-        this.$.signUp.onEmailValidate();
+        // this.$.toast.text ="email validated successfully";
+        // this.$.toast.open();
+        this.$.signUp.onEmailValidateSuccess();
     };
     template.checkAvailabilityFailureEventHandler = function(e, response) {
-        this.$.toast.text =response.message;
-        this.$.toast.open();
-        this.$.signUp.onEmailValidate();
+        // this.$.toast.text =response.message;
+        // this.$.toast.open();
         this.$.signUp.onEmailValidateFailure(response);
     };
 

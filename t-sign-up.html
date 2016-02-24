@@ -1,5 +1,5 @@
 <link rel="import" href="../polymer/polymer.html">
-<link rel="import" href="../paper-toast/paper-toast.html">
+<link rel="import" href="../t-notify/t-notify.html">
 <link rel="import" href="../t-loader/t-loader.html">
 <link rel="import" href="../iron-ajax/iron-ajax.html">
 <link rel="import" href="../iron-flex-layout/classes/iron-flex-layout.html">
@@ -17,6 +17,7 @@
     The event handler should use 't-user-availability-api' component's 'checkAvailability' method to check availability.
     'on-t-sign-up-register' is fired while saving user data.
     The event handler should use 't-sign-up-api' component's 'signUp' method to save user.
+    't-sign-up-go-signin' event is fired once the user is successfully registered.
 
 Example:
         without event handlers
@@ -65,7 +66,7 @@ Example:
                 <a href$="[[policiesUrl]]" target="_blank" class$="{{_checkIfUrl(policiesUrl)}}">policy</a> and 
                 <a href$="[[termsUrl]]" target="_blank" class$="{{_checkIfUrl(termsUrl)}}">terms of use</a>.
             </label>
-            <t-button class="primary block margin-bottom" label="Create Account" raised on-click="_saveNewUser">
+            <t-button id="btnCreateAccount" class="primary block margin-bottom" label="Create Account" raised on-click="_saveNewUser">
             </t-button>
             <div class="margin-bottom">If you are an existing user <a class="link-style" on-tap="_goToSignInPage">sign in</a> here</div>
         </div>
@@ -156,6 +157,7 @@ Polymer({
         // this.$.loader.active = true;
         this.fire('t-sign-up-register', this._generateRequest());
         this.$.notify.active = false;
+        this._disableButton(this.$.btnCreateAccount);
     },
 
     _goToSignInPage: function() {
@@ -172,17 +174,42 @@ Polymer({
         };
     },
 
-    /*Run the method when the response comes back with Already Used Email */
-    onEmailValidateFailure: function(response){
-        this.$.notify.message = response.message;
-        this.$.notify.active = true;
-    },
-
     /*Run the method when the response comes back with response */
-    onEmailValidate: function() {
+    onEmailValidateSuccess: function() {
         this.userChecking = false;
     },
 
+    /*Run the method when the response comes back with Already Used Email */
+    onEmailValidateFailure: function(response){
+        if (!response || !response.message) {
+            console.error('response can not be null');
+            return;
+        }
+        this.userChecking = false;
+        this._notify(response);
+    },
+
+
+    /*Run the method when the response comes back with Already Used Email */
+    onSaveUserSuccess: function(response){
+        //[manoj] - do we need to show notification for this?
+        if (!response) {
+            console.error('response can not be null');
+            this._enableButton(this.$.btnCreateAccount);
+            return;
+        }
+        this._goSignIn();
+    },
+
+    /*Run the method when the response comes back with Already Used Email */
+    onSaveUserFailure: function(response){
+        if (!response || !response.message) {
+            console.error('response can not be null');
+            return;
+        }
+        this._enableButton(this.$.btnCreateAccount);
+        this._notify(response);
+    },
     /**
      * To run the validate method in the entire component
      * This is a required field.
@@ -196,6 +223,27 @@ Polymer({
             }
         }
         return check;
+    },
+
+    _notify:function (response) {
+        if (!response || !response.message)
+            return;
+
+        // this.$.notify.message = (response.code+ ' - ' || '')  + response.message;
+        this.$.notify.message = response.message;
+        this.$.notify.active = true;   
+    },
+
+    _goSignIn: function() {
+        this.fire('t-sign-up-go-signin');
+        //alert('Go to signin page');
+    },
+    _disableButton: function(element) {
+        element.disabled = true;
+    },
+
+    _enableButton: function(element) {
+        element.disabled = false;
     }
 });
 </script>
