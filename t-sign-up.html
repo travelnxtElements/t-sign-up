@@ -54,7 +54,7 @@ Example:
             <t-input id="lastName" value="{{lastName}}" type="text" error-message="You missed this." pattern="[a-zA-Z ']*" max-length="10" label="Last Name" class="margin-bottom-medium" required auto-validate></t-input>
             <t-calendar id="dateOfBirth" selected-date="{{dateOfBirth}}" max="{{_getMaxDateOfBirth(minAge)}}" label="Date Of Birth" is-dob class="margin-bottom-medium" error-message="You missed this." required></t-calendar>
             <div class="loader-container">
-                <t-input id="emailId" value="{{emailId}}" type="text" label="Email" on-change="_userNameAvailability" class="margin-bottom-medium" pattern='^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$' error-message="You missed this." auto-validate required></t-input>
+                <t-input id="emailId" value="{{emailId}}" type="text" label="Email" on-change="_userNameAvailability" class="margin-bottom-medium" pattern='^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$' error-message="You missed this." required></t-input>
                 <template is="dom-if" if="[[userChecking]]">
                     <t-loader id="loader" active></t-loader>
                 </template>
@@ -192,13 +192,13 @@ Polymer({
 
     /*Run the method when the response comes back with Already Used Email */
     onSaveUserSuccess: function(response){
+        //enabling button no matter it is success or failure
+        this._enableButton(this.$.btnCreateAccount);
         //[manoj] - do we need to show notification for this?
         if (!response) {
             console.error('response can not be null');
-            this._enableButton(this.$.btnCreateAccount);
             return;
         }
-        this._goSignIn();
     },
 
     /*Run the method when the response comes back with Already Used Email */
