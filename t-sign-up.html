@@ -83,25 +83,37 @@ Polymer({
          * first name of user.
          * This field is required.
          */
-        firstName: String,
+        firstName: {
+            type: String,
+            notify: true
+        },
 
         /**
          * last nae of user.
          * This field is required.
          */
-        lastName: String,
+        lastName: {
+            type: String,
+            notify: true
+        },
 
         /**
          * Email id of user.
          * This is a required field and is used as user name in application.
          */
-        emailId: String,
+        emailId: {
+            type: String,
+            notify: true
+        },
 
         /**
          * Password.
          * Atleast 8 characters.
          */
-        password: String,
+        password: {
+            type: String,
+            notify: true
+        },
 
         /**
          * Pass a string as URL for policy
