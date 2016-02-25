@@ -141,8 +141,7 @@ Polymer({
 
     _userNameAvailability: function() {
 
-        if (this.emailId && this.$.emailId.validate()) {
-            // this.$.loader.active = true;
+        if (!this.$.btnCreateAccount.disabled && this.emailId && this.$.emailId.validate()) {
             this.fire('t-sign-up-validate-email', {
                 email: this.emailId
             });
@@ -152,9 +151,8 @@ Polymer({
     },
 
     _saveNewUser: function() {
-        if (!this.validate())
+        if (!this.validate() || this.$.btnCreateAccount.disabled)
             return;
-        // this.$.loader.active = true;
         this.fire('t-sign-up-register', this._generateRequest());
         this.$.notify.active = false;
         this._disableButton(this.$.btnCreateAccount);
