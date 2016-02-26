@@ -54,12 +54,12 @@ Example:
             <t-input id="lastName" value="{{lastName}}" type="text" error-message="You missed this." pattern="[a-zA-Z ']*" max-length="10" label="Last Name" class="margin-bottom-medium" required auto-validate></t-input>
             <t-calendar id="dateOfBirth" format="dd mmm, yyyy" selected-date="{{dateOfBirth}}" max="{{_getMaxDateOfBirth(minAge)}}" label="Date Of Birth" is-dob class="margin-bottom-medium" error-message="You missed this." required></t-calendar>
             <div class="loader-container">
-                <t-input id="emailId" value="{{emailId}}" type="text" label="Email" on-change="_userNameAvailability" class="margin-bottom-medium" pattern='^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$' error-message="You missed this." required></t-input>
+                <t-input id="emailId" value="{{emailId}}" type="text" label="Email" on-change="_userNameAvailability" class="margin-bottom-medium" pattern='^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$' error-message="Invalid email!" required></t-input>
                 <template is="dom-if" if="[[userChecking]]">
                     <t-loader id="loader" active></t-loader>
                 </template>
             </div>
-            <label class="margin-bottom block">Note email will be used as your username.</label>
+            <label class="margin-bottom block">Note : email will be used as your username.</label>
             <t-password-input id="password" value="{{password}}" class="margin-bottom-medium" required>
             </t-password-input>
             <label class="margin-bottom block">By clicking 'Create Account' button, you agree to
