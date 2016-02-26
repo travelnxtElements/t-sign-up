@@ -29,6 +29,12 @@ Polymer({
     },
 
     _successCallback: function(event) {
+
+        if(!event.detail.response.result){
+            event.detail.response.status.isSuccessful = false;
+            event.detail.response.status.code = "317100";
+        }
+
         this._successHandler(event);
     },
 
