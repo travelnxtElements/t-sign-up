@@ -46,43 +46,12 @@ Polymer({
     },
 
     _successCallback: function(event) {
-        var operationErrors = [316000, 316500, 500];
-        
-        var error = null;
-        var success = null;
-        if (!event.detail.response || !event.detail.response.status || !event.detail.response.status.code 
-            || operationErrors.indexOf(event.detail.response.status.code)!= -1 
-            || (!event.detail.response.status.isSuccessful && event.detail.response.status.code != 317100)){
-            error = { message: 'Operation error occured, please try again.', code: 500};
-            this.fire('t-sign-up-api-error', error, { bubbles: true });
-        }
-        else if(!event.detail.response.status.isSuccessful && event.detail.response.status.code == 317100 ){                        
-            error = { message: 'Username is already in use, try another.', code: event.detail.response.status.code};
-            this.fire('t-sign-up-api-error', error, { bubbles: true });         
-        }
-        else {            
-            success = event.detail.response;
-            this.fire('t-sign-up-api-success', success, {
-                bubbles: true
-            });
-        }
-
-        if(error)
-            this._setLastError(error);
-        else if(success)
-            this._setLastResponse(success);
-
-        this._setLoading(false);
+        this._successHandler(event);
     },
 
     _errorCallback: function(event) {
-        var error ={ message: 'Connection error occured, please try again.', code: event.detail.request.status };
-        this._setLastError(error);
-        this._setLoading(false);
-
-        this.fire('t-sign-up-api-error', error, { bubbles: true });
-        console.error('t-sign-up-api-error', event);            
-    },
+        this._errorHandler(event);
+    }
 
 });
 </script>
