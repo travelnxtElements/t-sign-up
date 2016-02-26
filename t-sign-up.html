@@ -202,12 +202,9 @@ Polymer({
 
     /*Run the method when the response comes back with Already Used Email */
     onSaveUserSuccess: function(response) {
-        //enabling button no matter it is success or failure
-        this._enableButton(this.$.btnCreateAccount);
-        //[manoj] - do we need to show notification for this?
         if (!response) {
+            this._enableButton(this.$.btnCreateAccount);
             console.error('response can not be null');
-            return;
         }
     },
 
